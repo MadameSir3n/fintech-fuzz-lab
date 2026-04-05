@@ -48,6 +48,12 @@ This lab wraps a realistic FastAPI payment endpoint in a Hypothesis-powered fuzz
 git clone https://github.com/MadameSir3n/fintech-fuzz-lab.git
 cd fintech-fuzz-lab
 pip install -r requirements.txt
+python main.py        # start the payment API at http://localhost:8000
+```
+
+Run fuzz tests:
+
+```bash
 python -m pytest tests/ -v
 ```
 
@@ -56,6 +62,12 @@ Or with Docker:
 ```bash
 docker-compose up --build
 ```
+
+## Known Limitations
+
+- Intentionally vulnerable endpoints are for local testing only — do not deploy publicly
+- Some components are still being refined
+- This is an active development system
 
 ## Sample Test Output
 
