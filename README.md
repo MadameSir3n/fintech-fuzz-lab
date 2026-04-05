@@ -1,283 +1,79 @@
-# FinTech Fuzz Lab 🔍💳
+# FinTech Fuzz Lab
 
-[![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://python.org)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.104%2B-green.svg)](https://fastapi.tiangolo.com)
-[![Hypothesis](https://img.shields.io/badge/Hypothesis-6.92%2B-orange.svg)](https://hypothesis.works)
-[![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://docker.com)
-[![Security](https://img.shields.io/badge/Security-Testing-red.svg)](https://owasp.org)
-[![Fuzzing](https://img.shields.io/badge/Fuzzing-Automated-yellow.svg)](https://github.com/MadameSir3n/fintech-fuzz-lab)
+An automated security testing harness that fuzzes a payment API with thousands of adversarial inputs — SQL injection, XSS, malformed JSON, oversized payloads — to surface vulnerabilities before deployment.
 
-A security testing harness for financial APIs, designed to discover vulnerabilities through automated fuzz testing with Hypothesis and comprehensive attack vectors.
+---
 
-## 🎯 What Problem This Solves
+## Problem
 
-Replaces reactive security testing with **proactive vulnerability discovery** that catches input validation bugs, injection vulnerabilities, and edge cases **before deployment**, reducing costly production security incidents in fintech applications.
+Payment APIs are a top target for attackers. Most teams only test happy-path inputs, leaving edge cases — malformed JSON, boundary-busting numbers, injection strings — undiscovered until something breaks in production.
 
-## 🚀 Features
+## Solution
 
-- **Comprehensive Fuzzing**: Multiple attack vectors (SQLi, XSS, malformed JSON, oversized payloads)
-- **Hypothesis Integration**: Property-based testing with intelligent test case generation
-- **FastAPI Payment API**: Realistic financial endpoint for testing
-- **Artifact Collection**: Automatic saving of failing test cases for reproduction
-- **Dockerized**: One-command deployment and testing
-- **CI Ready**: Easy integration into development pipelines
+This lab wraps a realistic FastAPI payment endpoint in a Hypothesis-powered fuzz harness that automatically generates thousands of attack inputs across multiple categories and saves any inputs that cause unexpected behavior as reproducible artifacts.
 
-## 🏗️ Architecture
+## Key Features
+
+- Property-based testing via Hypothesis (intelligent generation, not random noise)
+- Attack categories: SQL injection, XSS, type confusion, boundary values, oversized payloads
+- Artifacts saved automatically for every failing case
+- Realistic payment API endpoint as the test target
+- Full pytest integration — runs in CI with no extra setup
+- Docker support for isolated testing environments
+
+## Tech Stack
+
+- **Python** — test harness and API
+- **FastAPI** — payment API target
+- **Hypothesis** — property-based fuzzing engine
+- **pytest** — test runner
+- **Docker / Docker Compose** — isolated test environment
+
+## Example Flow
 
 ```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Fuzz Harness  │───▶│   Payment API    │───▶│   Artifact      │
-│   (Hypothesis)  │    │   (FastAPI)      │    │   Collection    │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-         │                       │                       │
-         ▼                       ▼                       ▼
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Test Cases    │    │   Vulnerability  │    │   Reproducible  │
-│   Generation    │    │   Discovery      │    │   Failures      │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
+1. Hypothesis generates: card_number = "'; DROP TABLE payments; --"
+2. POST /payments  →  { "card_number": "...", "amount": 100.00, ... }
+3. API returns 422 (validation caught it)  →  PASS
+
+4. Hypothesis generates: amount = -9999999999999.99
+5. POST /payments  →  server error 500  →  FAIL
+6. Artifact saved: artifacts/boundary_amount_1710512345.json
+7. Review artifact → fix the validator → rerun
 ```
 
-## 🛡️ Attack Vectors Tested
+## How to Run
 
-### 1. Input Validation
-- Malformed JSON payloads
-- Type confusion attacks
-- Boundary value violations
-- Negative/zero/oversized amounts
-
-### 2. Injection Attacks
-- SQL injection attempts
-- NoSQL injection patterns
-- Command injection vectors
-
-### 3. XSS Attacks
-- Script tag injections
-- Event handler manipulations
-- JavaScript URI schemes
-
-### 4. Resource Exhaustion
-- Oversized payloads (up to 10MB)
-- Deeply nested structures
-- Array bombing attacks
-
-### 5. Business Logic
-- Invalid card numbers
-- Incorrect expiry dates
-- Currency manipulation
-- Negative amounts
-
-## 🚀 Quick Start
-
-### Prerequisites
-- Docker and Docker Compose
-- Python 3.11+ (optional, for local development)
-
-### One-Command Deployment
 ```bash
-# Start the API and run fuzz tests
+git clone https://github.com/MadameSir3n/fintech-fuzz-lab.git
+cd fintech-fuzz-lab
+pip install -r requirements.txt
+python -m pytest tests/ -v
+```
+
+Or with Docker:
+
+```bash
 docker-compose up --build
 ```
 
-The API will be available at `http://localhost:8000` and automatic fuzz testing will begin.
-
-### Manual Testing
-```bash
-# Start the API
-docker-compose up fintech-fuzz-api
-
-# In another terminal, run fuzz tests
-python -m src.fuzzer --url http://localhost:8000
-
-# Or run specific tests
-python -m src.fuzzer --url http://localhost:8000 --verbose
-```
-
-### API Endpoints
-
-#### Payment Processing
-- `POST /payments` - Process a payment transaction
-- `GET /payments/{id}` - Retrieve transaction details
-- `GET /payments` - List recent transactions
-
-#### Vulnerable Endpoints (for testing)
-- `POST /vulnerable/echo` - Echo raw input (vulnerable)
-- `POST /vulnerable/json-parse` - Parse JSON (vulnerable)
-- `GET /vulnerable/reflect` - Reflect parameter (vulnerable)
-
-#### Health Check
-- `GET /health` - API health status
-
-## 🧪 Running Tests
-
-### Unit Tests
-```bash
-pytest tests/ -v
-```
-
-### Fuzz Tests
-```bash
-# Run comprehensive fuzz testing
-python -m src.fuzzer
-
-# Run with custom target
-python -m src.fuzzer --url http://your-api:8000
-
-# Verbose mode with detailed logging
-python -m src.fuzzer --verbose
-```
-
-### Example Test Output
-```
-==================================================
-FIN TECH FUZZ LAB - TEST SUMMARY
-==================================================
-Total tests run: 245
-Successful responses: 178
-Server errors (5xx): 3
-Client errors (4xx): 59
-Crashes/exceptions: 5
-Artifacts saved: 8
-Test duration: 45.32 seconds
-==================================================
-```
-
-## 📁 Project Structure
+## Sample Test Output
 
 ```
-fintech-fuzz-lab/
-├── src/
-│   ├── app.py              # FastAPI payment application
-│   └── fuzzer.py           # Hypothesis fuzz harness
-├── tests/
-│   └── test_payment_api.py # Unit and integration tests
-├── artifacts/              # Saved test cases and results
-├── Dockerfile
-├── docker-compose.yml
-├── requirements.txt
-└── README.md
+tests/test_payment_api.py::test_valid_payment PASSED
+tests/test_payment_api.py::test_invalid_card_number PASSED
+tests/test_payment_api.py::test_negative_amount PASSED
+tests/test_payment_api.py::test_sql_injection PASSED
+tests/test_payment_api.py::test_xss_in_merchant_id PASSED
+tests/test_payment_api.py::test_oversized_payload PASSED
+tests/test_payment_api.py::test_card_number_property PASSED    (100 examples)
+
+25 passed in 3.28s
 ```
 
-## 🔧 Configuration
+## Why This Matters
 
-### Environment Variables
-```bash
-# API Configuration
-PYTHONPATH=/app/src
-PYTHONUNBUFFERED=1
-
-# Fuzzer Configuration
-BASE_URL=http://localhost:8000
-VERBOSE=false
-```
-
-### Customizing Fuzz Tests
-
-Modify `src/fuzzer.py` to add new attack vectors:
-
-```python
-# Add new payload strategy
-def custom_attack_strategy():
-    return st.text(alphabet="<>"'\"/?=&", min_size=10, max_size=100)
-
-# Add new test method
-@given(payload=custom_attack_strategy())
-def fuzz_custom_attack(self, payload):
-    self.test_endpoint("/payments", "POST", {"description": payload})
-```
-
-## 🎯 Use Cases
-
-### 1. CI/CD Pipeline Integration
-```yaml
-# GitHub Actions example
-jobs:
-  security-test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Run fuzz tests
-        run: |
-          docker-compose up -d fintech-fuzz-api
-          sleep 10  # Wait for API to start
-          python -m src.fuzzer --url http://localhost:8000
-```
-
-### 2. Local Development Testing
-```bash
-# Test your local API changes
-python -m src.fuzzer --url http://localhost:8000
-
-# Generate test artifacts for analysis
-ls -la artifacts/
-```
-
-### 3. Production API Testing
-```bash
-# Test staging/production environments
-python -m src.fuzzer --url https://api.staging.example.com
-```
-
-## 📊 Metrics Collected
-
-- **Total Tests Run**: Overall test count
-- **Success Rate**: Valid responses percentage
-- **Error Rate**: Server errors (5xx)
-- **Warning Rate**: Client errors (4xx)
-- **Crash Rate**: Unhandled exceptions
-- **Test Duration**: Total execution time
-- **Artifacts Saved**: Reproducible test cases
-
-## 🛡️ Security Findings Examples
-
-### 1. Input Validation Bugs
-```json
-{
-  "artifact": "malformed_json_1234567890.json",
-  "payload": "{\"amount\": NaN}",
-  "error": "Validation error: amount must be a number"
-}
-```
-
-### 2. Injection Vulnerabilities
-```json
-{
-  "artifact": "sql_injection_1234567890.json",
-  "payload": {"description": "' OR 1=1 --"},
-  "response": {"status_code": 500}
-}
-```
-
-### 3. Resource Exhaustion
-```json
-{
-  "artifact": "oversized_payload_1234567890.json",
-  "payload": {"metadata": {"large_field": "A" * 100000}},
-  "response": {"status_code": 413}
-}
-```
-
-## 🚧 Future Enhancements
-
-- [ ] Database integration for persistent artifact storage
-- [ ] GraphQL endpoint fuzzing support
-- [ ] gRPC protocol fuzzing capabilities
-- [ ] Automated exploit generation
-- [ ] Integration with OWASP ZAP
-- [ ] CI/CD pipeline templates
-- [ ] Real-time dashboard for test results
-- [ ] Machine learning-based test case generation
-
-## 📝 License
-
-MIT License - see LICENSE file for details.
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+Security vulnerabilities in payment systems cause direct financial harm. This project demonstrates how property-based fuzzing can be applied to financial APIs to systematically discover input handling flaws — the same technique used by security engineers at scale, automated into a repeatable test suite.
 
 ## 🐛 Reporting Issues
 
