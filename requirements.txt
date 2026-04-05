@@ -1,0 +1,15 @@
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+requests==2.31.0
+hypothesis==6.92.2
+python-multipart==0.0.6
+
+# Development/testing extras
+pytest==7.4.3
+pytest-asyncio==0.21.1
+httpx==0.25.2
+
+# Optional: for enhanced fuzzing
+# fuzzowski==0.1.0  # Advanced fuzzing framework
+# boofuzz==0.4.1   # Network protocol fuzzer

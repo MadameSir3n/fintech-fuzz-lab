@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  fintech-fuzz-api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/app/src
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./src:/app/src
+      - ./artifacts:/app/artifacts
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  # Optional: Add a database for persistent storage in future versions
+  # postgres:
+  #   image: postgres:15
+  #   environment:
+  #     - POSTGRES_DB=fintech_fuzz
+  #     - POSTGRES_USER=appuser
+  #     - POSTGRES_PASSWORD=password
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U appuser"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 5
+
+# volumes:
+#   postgres_data:
