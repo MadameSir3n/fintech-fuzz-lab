@@ -1,5 +1,12 @@
 # FinTech Fuzz Lab 🔍💳
 
+[![Python](https://img.shields.io/badge/Python-3.11%2B-blue.svg)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.104%2B-green.svg)](https://fastapi.tiangolo.com)
+[![Hypothesis](https://img.shields.io/badge/Hypothesis-6.92%2B-orange.svg)](https://hypothesis.works)
+[![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://docker.com)
+[![Security](https://img.shields.io/badge/Security-Testing-red.svg)](https://owasp.org)
+[![Fuzzing](https://img.shields.io/badge/Fuzzing-Automated-yellow.svg)](https://github.com/MadameSir3n/fintech-fuzz-lab)
+
 A security testing harness for financial APIs, designed to discover vulnerabilities through automated fuzz testing with Hypothesis and comprehensive attack vectors.
 
 ## 🎯 What Problem This Solves
