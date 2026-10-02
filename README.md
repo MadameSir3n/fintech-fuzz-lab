@@ -2,6 +2,8 @@
 
 An automated security testing harness that fuzzes a payment API with thousands of adversarial inputs — SQL injection, XSS, malformed JSON, oversized payloads — to surface vulnerabilities before deployment.
 
+> **Hiring/portfolio quick view:** see [PORTFOLIO.md](PORTFOLIO.md) for a recruiter-friendly case study of the API security testing, Hypothesis/property-based fuzzing, FastAPI, Docker, and test automation work demonstrated in this repository.
+
 ---
 
 ## Problem
@@ -87,7 +89,7 @@ tests/test_payment_api.py::test_card_number_property PASSED    (100 examples)
 
 Security vulnerabilities in payment systems cause direct financial harm. This project demonstrates how property-based fuzzing can be applied to financial APIs to systematically discover input handling flaws — the same technique used by security engineers at scale, automated into a repeatable test suite.
 
-## 🐛 Reporting Issues
+## Reporting Issues
 
 Found a bug or have a feature request? Please open an issue on GitHub with:
 - Detailed description of the problem
@@ -95,7 +97,7 @@ Found a bug or have a feature request? Please open an issue on GitHub with:
 - Expected vs actual behavior
 - Environment details
 
-## 📚 Learning Resources
+## Learning Resources
 
 - [Hypothesis Documentation](https://hypothesis.readthedocs.io/)
 - [OWASP Testing Guide](https://owasp.org/www-project-web-security-testing-guide/)
@@ -104,4 +106,4 @@ Found a bug or have a feature request? Please open an issue on GitHub with:
 
 ---
 
-**Built with ❤️ for the fintech security community**
+Built for the fintech security community.
